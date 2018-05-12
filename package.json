@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "pkg": "pkg -t node8-win .\\package.json"
+    "pkg": "pkg -t node8-win .\\package.json && move quicksave.exe .\\bin\\"
   },
   "author": "Magnaar",
   "license": "ISC",

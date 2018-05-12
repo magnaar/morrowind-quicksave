@@ -18,9 +18,26 @@ function main()
 function initDataObject()
 {
     return {
+        units: {
+            "day": 'dd',
+            "month": 'mm',
+            "year": 'yy',
+            "year-2": 'yy',
+            "year-4": 'yyyy',
+            "hour": 'HH',
+            "hour-12": 'hh',
+            "hour-24": 'HH',
+            "minute": 'MM',
+            "second": 'SS',
+            "meridiem": 'TT',
+            "meridiem-1L": 't',
+            "meridiem-2L": 'tt',
+            "meridiem-1U": 'T',
+            "meridiem-2U": 'TT'
+        },
         defaultConfig: {
-            "name": (key) => `${key} dd/mm/yy HH:MM`,
-            "max": () => 5
+            name: (key) => `${key} {day}/{month}/{year} {hour}:{minute}`,
+            max: () => 5
         },
         paths: {
             saves: './Saves/',
@@ -31,16 +48,16 @@ function initDataObject()
     }
 }
 
-function initConfig(configPath)
+function initConfig(data)
 {
-    Fs.writeFileSync(configPath,
+    Fs.writeFileSync(data.paths.config,
         JSON.stringify({
             autosave: {
-                name: defaultConfig.name("Auto"),
+                name: data.defaultConfig.name("Auto"),
                 max: 5
             },
             quiksave: {
-                name: defaultConfig.name("Quick"),
+                name: data.defaultConfig.name("Quick"),
                 max: 10
             }
         }, null, 2)
@@ -50,7 +67,7 @@ function initConfig(configPath)
 function loadConfig(data)
 {
     if (! Fs.existsSync(data.paths.config))
-        initConfig(data.paths.config)
+        initConfig(data)
     data.config = JSON.parse(Fs.readFileSync(data.paths.config))
     data.saveNames = Object.keys(data.config).map(s => s + '.ess')
 }
@@ -129,8 +146,12 @@ function copyQuicksaveWithDate(newFile, now, key, data)
 
 function injectDateIntofileContent(fileContent, now, key, data)
 {
-    const name = dateformat(now, data.config[key].name || data.defaultConfig.name(key)) 
-    Buffer.from(name).copy(fileContent, 64)
+    const name = Object.entries(data.units)
+        .reduce(
+            (n, [u, f]) => n.replace(`{${u}}`, dateformat(now, f)),
+            data.config[key].name || data.defaultConfig.name(key)
+        )
+    Buffer.from(name.substring(0, 31)).copy(fileContent, 64)
 }
 
 function copyFile(inputFile, outputFile, { afterReading, afterWriting })
