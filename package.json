@@ -1,0 +1,18 @@
+{
+  "name": "quicksave",
+  "version": "1.0.0",
+  "description": "Rename your quicksave to allow you to have several of them",
+  "main": "index.js",
+  "bin" : {
+    "quicksave" : "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pkg": "pkg -t node8-win .\\package.json"
+  },
+  "author": "Magnaar",
+  "license": "ISC",
+  "dependencies": {
+    "dateformat": "^3.0.3"
+  }
+}
